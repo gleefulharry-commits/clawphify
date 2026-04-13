@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        pip install -e ".[all]"
+    
+    - name: Test CLI
+      run: |
+        clawphify --help
+        python3 -c "from clawphify import get_builtin_graph_path; print('Import OK')"
+    
+    - name: Check JSON graph
+      run: |
+        python3 -c "import json; json.load(open('clawphify/data/openclaw_graph.json')); print('Graph JSON valid')"
