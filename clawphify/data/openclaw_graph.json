@@ -1,0 +1,668 @@
+{
+  "metadata": {
+    "version": "2026.3.22",
+    "generated_at": "2026-04-13",
+    "type": "openclaw_framework_graph",
+    "description": "OpenClaw framework structure knowledge graph - with multi-agent and sessions_spawn configuration"
+  },
+  "nodes": {
+    "openclaw": {
+      "id": "openclaw",
+      "type": "system",
+      "label": "OpenClaw",
+      "description": "Multi-channel gateway for AI agents across Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, and more",
+      "attributes": {
+        "license": "MIT",
+        "node_version": "24 (recommended) or 22.16+",
+        "default_port": 18789,
+        "latest_version": "2026.3.22"
+      }
+    },
+    "gateway": {
+      "id": "gateway",
+      "type": "core_component",
+      "label": "Gateway",
+      "description": "Single source of truth for sessions, routing, and channel connections. WebSocket control plane at ws://127.0.0.1:18789",
+      "attributes": {
+        "path": "src/gateway",
+        "config_path": "~/.openclaw/openclaw.json",
+        "hot_reload": "hybrid mode (default) - auto-restart for critical changes"
+      }
+    },
+    "pi_agent": {
+      "id": "pi_agent",
+      "type": "agent",
+      "label": "Pi Agent",
+      "description": "Built-in AI coding agent with tool use, sessions, memory, and multi-agent routing",
+      "attributes": {
+        "mode": "RPC",
+        "session_type": "per-sender"
+      }
+    },
+    "web_control_ui": {
+      "id": "web_control_ui",
+      "type": "interface",
+      "label": "Web Control UI",
+      "description": "Browser dashboard for chat, config, sessions, and nodes",
+      "attributes": {
+        "url": "http://127.0.0.1:18789/"
+      }
+    },
+    "channels": {
+      "id": "channels",
+      "type": "category",
+      "label": "Channels",
+      "description": "Communication channel integrations for various messaging platforms"
+    },
+    "built_in_channels": {
+      "id": "built_in_channels",
+      "type": "subcategory",
+      "label": "Built-in Channels",
+      "description": "Channels bundled with OpenClaw core",
+      "attributes": {
+        "list": ["Discord", "Google Chat", "iMessage", "Signal", "Slack", "Telegram", "WebChat", "WhatsApp"]
+      }
+    },
+    "plugin_channels": {
+      "id": "plugin_channels",
+      "type": "subcategory",
+      "label": "Plugin Channels",
+      "description": "Channels via bundled plugins",
+      "attributes": {
+        "list": ["Matrix", "Nostr", "Twitch", "Zalo", "IRC", "Line", "Mattermost", "BlueBubbles", "Feishu", "WeChat"]
+      }
+    },
+    "multi_agent": {
+      "id": "multi_agent",
+      "type": "feature",
+      "label": "Multi-Agent System",
+      "description": "Run multiple agents simultaneously with specialization and coordination. Two schemes: static agents.list and dynamic sessions_spawn",
+      "attributes": {
+        "schemes": ["static_agents_list", "dynamic_sessions_spawn"],
+        "recommended": "sessions_spawn for flexibility"
+      }
+    },
+    "sessions_spawn": {
+      "id": "sessions_spawn",
+      "type": "tool",
+      "label": "sessions_spawn",
+      "description": "Dynamic sub-agent spawning tool. Main agent creates temporary workers on demand for task delegation",
+      "attributes": {
+        "usage": "sessions_spawn({label: 'coder', task: 'Implement OAuth2'})",
+        "runtime": "subagent | acp",
+        "attachments_supported": true,
+        "max_attachments": 50,
+        "max_attachment_bytes": 5242880
+      }
+    },
+    "agent_to_agent": {
+      "id": "agent_to_agent",
+      "type": "config",
+      "label": "Agent-to-Agent Communication",
+      "description": "Enable agents to communicate via sessions_list, sessions_history, sessions_send tools",
+      "attributes": {
+        "config_path": "tools.agentToAgent",
+        "enabled": "true | false",
+        "allow": "['*'] or ['agent1', 'agent2']"
+      }
+    },
+    "subagent_limits": {
+      "id": "subagent_limits",
+      "type": "config",
+      "label": "Sub-Agent Limits",
+      "description": "Control sub-agent spawning behavior and concurrency",
+      "attributes": {
+        "maxSpawnDepth": "2 (allows main→sub→sub-sub)",
+        "maxConcurrent": "8 (total concurrent sub-agents)",
+        "maxChildrenPerAgent": "5 (per parent agent)",
+        "runTimeoutSeconds": "900 (15 minutes default)"
+      }
+    },
+    "sessions_tools": {
+      "id": "sessions_tools",
+      "type": "tool_category",
+      "label": "Session Management Tools",
+      "description": "Tools for agent-to-agent coordination",
+      "attributes": {
+        "tools": ["sessions_list", "sessions_history", "sessions_send", "sessions_spawn"],
+        "sessions_list": "Discover active sessions/agents",
+        "sessions_history": "Fetch transcript logs for a session",
+        "sessions_send": "Message another session with optional reply-back"
+      }
+    },
+    "session_visibility": {
+      "id": "session_visibility",
+      "type": "config",
+      "label": "Session Visibility",
+      "description": "Control which sessions an agent can see",
+      "attributes": {
+        "config_path": "sessions.visibility",
+        "values": ["all", "own", "none"],
+        "use_case": "Debugging - allow main agent to see all agent sessions"
+      }
+    },
+    "agents_config": {
+      "id": "agents_config",
+      "type": "config",
+      "label": "Agents Configuration",
+      "description": "Define agents in openclaw.json agents.list or use dynamic spawning",
+      "attributes": {
+        "static_config": "agents.list[] with id, model, SOUL.md",
+        "dynamic_spawn": "No pre-config needed, use sessions_spawn directly"
+      }
+    },
+    "agent_model_assignment": {
+      "id": "agent_model_assignment",
+      "type": "feature",
+      "label": "Per-Agent Model Assignment",
+      "description": "Assign different models to different agent roles for cost/performance optimization",
+      "attributes": {
+        "priority_chain": "CLI > agent model > agent tier > template strategy > template model > config default",
+        "example": "Leader: opus, Workers: sonnet-4.5, Cost control: tier-based"
+      }
+    },
+    "sandbox_config": {
+      "id": "sandbox_config",
+      "type": "config",
+      "label": "Sandbox Configuration",
+      "description": "Docker/SSH sandbox for non-main sessions (security)",
+      "attributes": {
+        "mode": "off | non-main | all",
+        "backend": "docker | ssh | openshell",
+        "default_docker_image": "openclaw-sandbox:bookworm-slim"
+      }
+    },
+    "src_agents": {
+      "id": "src_agents",
+      "type": "module",
+      "label": "src/agents",
+      "description": "Agent system - tools, schema, CLI runner, sandbox, auth profiles, skills",
+      "attributes": {
+        "submodules": ["tools", "schema", "cli-runner", "sandbox", "auth-profiles", "skills", "command", "pi-embedded-runner"]
+      }
+    },
+    "src_gateway": {
+      "id": "src_gateway",
+      "type": "module",
+      "label": "src/gateway",
+      "description": "Gateway core - routing, session management, channel connections"
+    },
+    "src_channels": {
+      "id": "src_channels",
+      "type": "module",
+      "label": "src/channels",
+      "description": "Channel implementations and adapters"
+    },
+    "src_cli": {
+      "id": "src_cli",
+      "type": "module",
+      "label": "src/cli",
+      "description": "CLI commands - agent, nodes, gateway, cron, daemon management",
+      "attributes": {
+        "commands": ["openclaw onboard", "openclaw dashboard", "openclaw agent", "openclaw nodes", "openclaw sessions"]
+      }
+    },
+    "src_commands": {
+      "id": "src_commands",
+      "type": "module",
+      "label": "src/commands",
+      "description": "Command implementations and handlers"
+    },
+    "src_config": {
+      "id": "src_config",
+      "type": "module",
+      "label": "src/config",
+      "description": "Configuration management and validation"
+    },
+    "src_plugin_sdk": {
+      "id": "src_plugin_sdk",
+      "type": "module",
+      "label": "src/plugin-sdk",
+      "description": "Plugin SDK for extending OpenClaw with custom channels and capabilities"
+    },
+    "src_plugins": {
+      "id": "src_plugins",
+      "type": "module",
+      "label": "src/plugins",
+      "description": "Plugin system - contracts, runtime, test helpers"
+    },
+    "src_security": {
+      "id": "src_security",
+      "type": "module",
+      "label": "src/security",
+      "description": "Security features - tokens, allowlists, sandboxing"
+    },
+    "src_tasks": {
+      "id": "src_tasks",
+      "type": "module",
+      "label": "src/tasks",
+      "description": "Task management and execution system"
+    },
+    "src_infra": {
+      "id": "src_infra",
+      "type": "module",
+      "label": "src/infra",
+      "description": "Infrastructure utilities - net, TLS, outbound, formatting"
+    },
+    "src_tui": {
+      "id": "src_tui",
+      "type": "module",
+      "label": "src/tui",
+      "description": "Terminal UI components and theme"
+    },
+    "src_utils": {
+      "id": "src_utils",
+      "type": "module",
+      "label": "src/utils",
+      "description": "Shared utilities and helpers"
+    },
+    "src_media": {
+      "id": "src_media",
+      "type": "module",
+      "label": "src/media",
+      "description": "Media handling - images, audio, documents"
+    },
+    "src_media_understanding": {
+      "id": "src_media_understanding",
+      "type": "module",
+      "label": "src/media-understanding",
+      "description": "Media understanding and processing"
+    },
+    "src_secrets": {
+      "id": "src_secrets",
+      "type": "module",
+      "label": "src/secrets",
+      "description": "Secret management and encryption"
+    },
+    "src_sessions": {
+      "id": "src_sessions",
+      "type": "module",
+      "label": "src/sessions",
+      "description": "Session management and persistence"
+    },
+    "src_wizard": {
+      "id": "src_wizard",
+      "type": "module",
+      "label": "src/wizard",
+      "description": "Onboarding wizard and guided setup"
+    },
+    "docs_channels": {
+      "id": "docs_channels",
+      "type": "docs",
+      "label": "docs/channels",
+      "description": "Channel setup documentation for all supported platforms"
+    },
+    "docs_gateway": {
+      "id": "docs_gateway",
+      "type": "docs",
+      "label": "docs/gateway",
+      "description": "Gateway configuration, security, and troubleshooting"
+    },
+    "docs_cli": {
+      "id": "docs_cli",
+      "type": "docs",
+      "label": "docs/cli",
+      "description": "CLI command documentation"
+    },
+    "docs_concepts": {
+      "id": "docs_concepts",
+      "type": "docs",
+      "label": "docs/concepts",
+      "description": "Core concepts - features, multi-agent, architecture"
+    },
+    "docs_tools": {
+      "id": "docs_tools",
+      "type": "docs",
+      "label": "docs/tools",
+      "description": "Tool use documentation"
+    },
+    "docs_providers": {
+      "id": "docs_providers",
+      "type": "docs",
+      "label": "docs/providers",
+      "description": "AI provider configuration (Anthropic, OpenAI, etc.)"
+    },
+    "docs_automation": {
+      "id": "docs_automation",
+      "type": "docs",
+      "label": "docs/automation",
+      "description": "Automation features - cron, webhooks, tasks, hooks"
+    },
+    "skills": {
+      "id": "skills",
+      "type": "category",
+      "label": "Skills",
+      "description": "Agent skills for extended capabilities"
+    },
+    "extensions": {
+      "id": "extensions",
+      "type": "category",
+      "label": "Extensions",
+      "description": "VSCode extensions and editor integrations"
+    },
+    "packages": {
+      "id": "packages",
+      "type": "category",
+      "label": "Packages",
+      "description": "NPM packages and shared libraries"
+    },
+    "mobile_nodes": {
+      "id": "mobile_nodes",
+      "type": "feature",
+      "label": "Mobile Nodes",
+      "description": "iOS and Android nodes with pairing, Canvas, camera, and device actions"
+    },
+    "onboard_command": {
+      "id": "onboard_command",
+      "type": "command",
+      "label": "openclaw onboard",
+      "description": "Guided setup with --install-daemon flag",
+      "usage": "openclaw onboard --install-daemon"
+    },
+    "dashboard_command": {
+      "id": "dashboard_command",
+      "type": "command",
+      "label": "openclaw dashboard",
+      "description": "Open Web Control UI in browser"
+    },
+    "config_file": {
+      "id": "config_file",
+      "type": "config",
+      "label": "openclaw.json",
+      "description": "Main configuration file",
+      "path": "~/.openclaw/openclaw.json"
+    },
+    "orchestrator_pattern": {
+      "id": "orchestrator_pattern",
+      "type": "pattern",
+      "label": "Orchestrator Pattern",
+      "description": "Main agent breaks down tasks and spawns worker agents. Workers return results to orchestrator",
+      "attributes": {
+        "flow": "main → spawn workers → collect results → synthesize",
+        "max_depth": "2 recommended (main→sub→sub-sub)",
+        "coordination": "Via sessions_send or shared message bus"
+      }
+    },
+    "cost_control": {
+      "id": "cost_control",
+      "type": "pattern",
+      "label": "Cost Control Pattern",
+      "description": "Use premium model for main agent, cheaper models for workers",
+      "attributes": {
+        "main_agent": "claude-opus-4-6 (planning/synthesis)",
+        "workers": "claude-sonnet-4-5 or local models (ollama)",
+        "savings": "Significant cost reduction for parallel tasks"
+      }
+    },
+    "nested_spawning": {
+      "id": "nested_spawning",
+      "type": "feature",
+      "label": "Nested Spawning",
+      "description": "Allow sub-agents to spawn their own sub-agents (opt-in, depth-limited)",
+      "attributes": {
+        "config": "subagents.maxSpawnDepth: 2",
+        "use_case": "Research→fact-checker chains, tech lead→coder+reviewer",
+        "warning": "Keep depth limited to prevent complexity explosion"
+      }
+    },
+    "clawteam": {
+      "id": "clawteam",
+      "type": "ecosystem",
+      "label": "ClawTeam",
+      "description": "Third-party multi-agent swarm coordination framework for OpenClaw",
+      "attributes": {
+        "features": ["team spawn", "kanban board", "git worktrees", "per-agent models"],
+        "command": "clawteam spawn --team my-team --agent-name alice --task '...'"
+      }
+    },
+    "tailscale_integration": {
+      "id": "tailscale_integration",
+      "type": "feature",
+      "label": "Tailscale Integration",
+      "description": "Auto-configure Tailscale Serve/Funnel for remote Gateway access",
+      "attributes": {
+        "modes": ["off", "serve (tailnet-only)", "funnel (public)"],
+        "config": "gateway.tailscale.mode"
+      }
+    },
+    "browser_control": {
+      "id": "browser_control",
+      "type": "tool",
+      "label": "Browser Control",
+      "description": "OpenClaw-managed Chrome/Chromium with CDP control",
+      "attributes": {
+        "enabled": "browser.enabled: true",
+        "features": ["snapshots", "actions", "uploads", "profiles"]
+      }
+    },
+    "canvas_a2ui": {
+      "id": "canvas_a2ui",
+      "type": "tool",
+      "label": "Canvas + A2UI",
+      "description": "Agent-driven visual workspace with A2UI push/reset/eval/snapshot"
+    }
+  },
+  "edges": [
+    {"source": "openclaw", "target": "gateway", "relation": "has_component", "type": "EXTRACTED"},
+    {"source": "openclaw", "target": "pi_agent", "relation": "includes", "type": "EXTRACTED"},
+    {"source": "openclaw", "target": "web_control_ui", "relation": "provides", "type": "EXTRACTED"},
+    {"source": "openclaw", "target": "channels", "relation": "supports", "type": "EXTRACTED"},
+    {"source": "openclaw", "target": "skills", "relation": "supports", "type": "EXTRACTED"},
+    {"source": "openclaw", "target": "extensions", "relation": "includes", "type": "EXTRACTED"},
+    {"source": "openclaw", "target": "mobile_nodes", "relation": "supports", "type": "EXTRACTED"},
+    {"source": "openclaw", "target": "multi_agent", "relation": "implements", "type": "EXTRACTED"},
+    {"source": "openclaw", "target": "clawteam", "relation": "ecosystem", "type": "INFERRED", "confidence": 0.9},
+    {"source": "gateway", "target": "src_gateway", "relation": "implemented_in", "type": "EXTRACTED"},
+    {"source": "gateway", "target": "channels", "relation": "manages", "type": "EXTRACTED"},
+    {"source": "gateway", "target": "config_file", "relation": "uses", "type": "EXTRACTED"},
+    {"source": "channels", "target": "built_in_channels", "relation": "includes", "type": "EXTRACTED"},
+    {"source": "channels", "target": "plugin_channels", "relation": "includes", "type": "EXTRACTED"},
+    {"source": "channels", "target": "src_channels", "relation": "implemented_in", "type": "EXTRACTED"},
+    {"source": "channels", "target": "docs_channels", "relation": "documented_in", "type": "EXTRACTED"},
+    {"source": "pi_agent", "target": "src_agents", "relation": "implemented_in", "type": "EXTRACTED"},
+    {"source": "multi_agent", "target": "sessions_spawn", "relation": "uses", "type": "EXTRACTED"},
+    {"source": "multi_agent", "target": "agent_to_agent", "relation": "requires", "type": "INFERRED", "confidence": 0.95},
+    {"source": "multi_agent", "target": "sessions_tools", "relation": "uses", "type": "EXTRACTED"},
+    {"source": "multi_agent", "target": "orchestrator_pattern", "relation": "implements", "type": "INFERRED", "confidence": 0.9},
+    {"source": "sessions_spawn", "target": "subagent_limits", "relation": "controlled_by", "type": "INFERRED", "confidence": 0.95},
+    {"source": "sessions_spawn", "target": "agents_config", "relation": "configures", "type": "INFERRED", "confidence": 0.9},
+    {"source": "sessions_spawn", "target": "nested_spawning", "relation": "supports", "type": "INFERRED", "confidence": 0.9},
+    {"source": "agent_to_agent", "target": "session_visibility", "relation": "related_to", "type": "INFERRED", "confidence": 0.85},
+    {"source": "agent_to_agent", "target": "sessions_tools", "relation": "uses", "type": "EXTRACTED"},
+    {"source": "src_agents", "target": "sessions_spawn", "relation": "provides", "type": "INFERRED", "confidence": 0.95},
+    {"source": "src_cli", "target": "onboard_command", "relation": "provides", "type": "EXTRACTED"},
+    {"source": "src_cli", "target": "dashboard_command", "relation": "provides", "type": "EXTRACTED"},
+    {"source": "src_cli", "target": "src_commands", "relation": "delegates_to", "type": "INFERRED", "confidence": 0.95},
+    {"source": "onboard_command", "target": "src_wizard", "relation": "uses", "type": "INFERRED", "confidence": 0.9},
+    {"source": "config_file", "target": "src_config", "relation": "validated_by", "type": "INFERRED", "confidence": 0.9},
+    {"source": "config_file", "target": "agents_config", "relation": "contains", "type": "EXTRACTED"},
+    {"source": "config_file", "target": "multi_agent", "relation": "configures", "type": "INFERRED", "confidence": 0.95},
+    {"source": "config_file", "target": "sandbox_config", "relation": "contains", "type": "EXTRACTED"},
+    {"source": "web_control_ui", "target": "src_tui", "relation": "shares_components_with", "type": "INFERRED", "confidence": 0.8},
+    {"source": "plugin_channels", "target": "src_plugin_sdk", "relation": "built_with", "type": "INFERRED", "confidence": 0.95},
+    {"source": "plugin_channels", "target": "src_plugins", "relation": "managed_by", "type": "INFERRED", "confidence": 0.9},
+    {"source": "src_security", "target": "src_secrets", "relation": "uses", "type": "INFERRED", "confidence": 0.95},
+    {"source": "src_sessions", "target": "src_security", "relation": "secured_by", "type": "INFERRED", "confidence": 0.9},
+    {"source": "mobile_nodes", "target": "src_channels", "relation": "connects_via", "type": "INFERRED", "confidence": 0.9},
+    {"source": "src_media", "target": "src_media_understanding", "relation": "processed_by", "type": "INFERRED", "confidence": 0.95},
+    {"source": "src_tasks", "target": "docs_automation", "relation": "documented_in", "type": "EXTRACTED"},
+    {"source": "docs_gateway", "target": "tailscale_integration", "relation": "documents", "type": "INFERRED", "confidence": 0.9},
+    {"source": "multi_agent", "target": "cost_control", "relation": "enables", "type": "INFERRED", "confidence": 0.85},
+    {"source": "agent_model_assignment", "target": "multi_agent", "relation": "part_of", "type": "INFERRED", "confidence": 0.9},
+    {"source": "orchestrator_pattern", "target": "nested_spawning", "relation": "uses", "type": "INFERRED", "confidence": 0.85},
+    {"source": "sandbox_config", "target": "multi_agent", "relation": "secures", "type": "INFERRED", "confidence": 0.9},
+    {"source": "browser_control", "target": "sandbox_config", "relation": "configured_in", "type": "INFERRED", "confidence": 0.85}
+  ],
+  "communities": {
+    "core": {
+      "id": "core",
+      "name": "Core System",
+      "nodes": ["openclaw", "gateway", "pi_agent", "config_file"],
+      "description": "Central gateway and agent system"
+    },
+    "channels": {
+      "id": "channels",
+      "name": "Channel Ecosystem",
+      "nodes": ["channels", "built_in_channels", "plugin_channels", "src_channels", "docs_channels", "mobile_nodes"],
+      "description": "All channel integrations and documentation"
+    },
+    "multi_agent_system": {
+      "id": "multi_agent_system",
+      "name": "Multi-Agent System",
+      "nodes": ["multi_agent", "sessions_spawn", "agent_to_agent", "sessions_tools", "orchestrator_pattern", "nested_spawning", "agent_model_assignment", "cost_control"],
+      "description": "Multi-agent coordination, spawning, and communication"
+    },
+    "agent_system": {
+      "id": "agent_system",
+      "name": "Agent Runtime",
+      "nodes": ["src_agents", "agents_config", "subagent_limits", "session_visibility"],
+      "description": "Agent runtime, configuration, and limits"
+    },
+    "cli_interface": {
+      "id": "cli_interface",
+      "name": "CLI & Interface",
+      "nodes": ["src_cli", "src_commands", "src_tui", "onboard_command", "dashboard_command", "web_control_ui", "src_wizard"],
+      "description": "Command-line and web interfaces"
+    },
+    "plugins": {
+      "id": "plugins",
+      "name": "Plugin System",
+      "nodes": ["src_plugin_sdk", "src_plugins", "plugin_channels", "extensions"],
+      "description": "Plugin SDK and extension points"
+    },
+    "infrastructure": {
+      "id": "infrastructure",
+      "name": "Infrastructure",
+      "nodes": ["src_infra", "src_utils", "src_config", "src_security", "src_secrets", "src_sessions", "tailscale_integration"],
+      "description": "Shared infrastructure and utilities"
+    },
+    "media": {
+      "id": "media",
+      "name": "Media Processing",
+      "nodes": ["src_media", "src_media_understanding", "canvas_a2ui", "browser_control"],
+      "description": "Media handling and understanding"
+    },
+    "security": {
+      "id": "security",
+      "name": "Security & Sandboxing",
+      "nodes": ["sandbox_config", "src_security", "src_secrets"],
+      "description": "Security features and sandbox configuration"
+    },
+    "documentation": {
+      "id": "documentation",
+      "name": "Documentation",
+      "nodes": ["docs_channels", "docs_gateway", "docs_cli", "docs_concepts", "docs_tools", "docs_providers", "docs_automation"],
+      "description": "All documentation hubs"
+    },
+    "ecosystem": {
+      "id": "ecosystem",
+      "name": "Ecosystem",
+      "nodes": ["skills", "clawteam"],
+      "description": "Third-party tools and frameworks"
+    }
+  },
+  "god_nodes": ["openclaw", "gateway", "channels", "multi_agent", "sessions_spawn", "src_agents", "src_cli"],
+  "quick_reference": {
+    "getting_started": {
+      "install": "npm install -g openclaw@latest",
+      "onboard": "openclaw onboard --install-daemon",
+      "dashboard": "openclaw dashboard"
+    },
+    "key_directories": {
+      "src/agents": "Agent system implementation",
+      "src/gateway": "Gateway core",
+      "src/channels": "Channel implementations",
+      "src/cli": "CLI commands",
+      "src/plugin-sdk": "Plugin development SDK",
+      "docs/channels": "Channel setup guides",
+      "docs/gateway": "Gateway configuration"
+    },
+    "config_essentials": {
+      "location": "~/.openclaw/openclaw.json",
+      "key_settings": ["channels.*.allowFrom", "channels.*.groups", "messages.groupChat.mentionPatterns"]
+    },
+    "multi_agent_quickstart": {
+      "enable_agent_to_agent": {
+        "tools.agentToAgent.enabled": true,
+        "tools.agentToAgent.allow": ["*"],
+        "sessions.visibility": "all"
+      },
+      "subagent_limits": {
+        "agents.defaults.subagents.maxSpawnDepth": 2,
+        "agents.defaults.subagents.maxConcurrent": 8,
+        "agents.defaults.subagents.maxChildrenPerAgent": 5,
+        "agents.defaults.subagents.runTimeoutSeconds": 900
+      },
+      "sessions_spawn_usage": "sessions_spawn({label: 'coder', task: 'Implement feature X'})"
+    },
+    "common_patterns": {
+      "orchestrator": "Main agent spawns workers → workers complete → main synthesizes",
+      "cost_control": "Main: opus (planning), Workers: sonnet-4.5 or local models",
+      "nested": "Depth 2 max (main→sub→sub-sub), use with caution"
+    }
+  },
+  "configuration_examples": {
+    "basic_multi_agent": {
+      "description": "Enable multi-agent with agent-to-agent communication",
+      "config": {
+        "tools": {
+          "agentToAgent": {
+            "enabled": true,
+            "allow": ["*"]
+          }
+        },
+        "sessions": {
+          "visibility": "all"
+        }
+      }
+    },
+    "subagent_limits": {
+      "description": "Control sub-agent spawning behavior",
+      "config": {
+        "agents": {
+          "defaults": {
+            "subagents": {
+              "maxSpawnDepth": 2,
+              "maxConcurrent": 8,
+              "maxChildrenPerAgent": 5,
+              "runTimeoutSeconds": 900
+            }
+          }
+        }
+      }
+    },
+    "cost_optimized": {
+      "description": "Use different models for main vs workers",
+      "config": {
+        "agents": {
+          "defaults": {
+            "subagents": {
+              "model": "anthropic/claude-sonnet-4-5",
+              "thinking": "low"
+            }
+          },
+          "list": [
+            {
+              "id": "main",
+              "model": {"primary": "anthropic/claude-opus-4-6"}
+            }
+          ]
+        }
+      }
+    },
+    "sandbox_security": {
+      "description": "Sandbox non-main sessions for security",
+      "config": {
+        "agents": {
+          "defaults": {
+            "sandbox": {
+              "mode": "non-main",
+              "backend": "docker",
+              "scope": "agent"
+            }
+          }
+        }
+      }
+    }
+  }
+}

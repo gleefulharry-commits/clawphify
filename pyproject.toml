@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clawphify"
+version = "0.1.0"
+description = "OpenClaw framework knowledge graph injector - new Claw projects instantly understand the framework structure"
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["openclaw", "claw", "knowledge-graph", "framework", "graphify", "rag", "ai", "agent"]
+requires-python = ">=3.10"
+dependencies = [
+    "networkx",
+    "tree-sitter",
+]
+
+[project.urls]
+Homepage = "https://github.com/han/clawphify"
+Repository = "https://github.com/han/clawphify"
+Issues = "https://github.com/han/clawphify/issues"
+Changelog = "https://github.com/han/clawphify/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+mcp = ["mcp"]
+neo4j = ["neo4j"]
+all = ["mcp", "neo4j"]
+
+[project.scripts]
+clawphify = "clawphify.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["clawphify*"]
+
+[tool.setuptools.package-data]
+clawphify = ["skill.md", "skill-claw.md", "data/openclaw_graph.json"]
